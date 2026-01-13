@@ -26,8 +26,54 @@ class HabitCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(habit.name,
-                      style: Theme.of(context).textTheme.titleMedium),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(habit.name,
+                            style: Theme.of(context).textTheme.titleMedium),
+                      ),
+                      // Badge untuk kategori
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: habit.category == HabitCategory.good
+                              ? Colors.green.withOpacity(0.15)
+                              : Colors.red.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              habit.category == HabitCategory.good
+                                  ? Icons.check_circle_rounded
+                                  : Icons.cancel_rounded,
+                              size: 12,
+                              color: habit.category == HabitCategory.good
+                                  ? Colors.green
+                                  : Colors.red,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              habit.category == HabitCategory.good
+                                  ? 'Good'
+                                  : 'Bad',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: habit.category == HabitCategory.good
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 4),
                   habit.isTimed
                       ? Text(_timedSubtitle(),

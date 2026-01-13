@@ -6,6 +6,8 @@ import '../state/habits_state.dart';
 import '../widgets/heatmap_calendar.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_page.dart';
+import 'analytics_page.dart';
+import 'history_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -103,6 +105,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       appBar: AppBar(
         title: const Text('Habit Tracker'),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AnalyticsPage()),
+              );
+            },
+            icon: const Icon(Icons.bar_chart_rounded),
+            tooltip: 'Analytics',
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HistoryPage()),
+              );
+            },
+            icon: const Icon(Icons.history_rounded),
+            tooltip: 'History',
+          ),
           Builder(
             builder: (ctx) => IconButton(
               onPressed: () => Scaffold.of(ctx).openEndDrawer(),
@@ -141,6 +163,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             completions: aggregated,
             month: _month,
             showTitle: false,
+            habits: hs.habits, // Pass habits untuk detail
           ),
           const SizedBox(height: 8),
           _legend(context),

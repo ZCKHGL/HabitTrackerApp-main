@@ -15,16 +15,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
   final _nameCtrl = TextEditingController();
   bool _timed = false;
   Duration _target = const Duration(minutes: 25);
-  Color _color = const Color(0xFF42A5F5);
-
-  final _palette = const [
-    Color(0xFFEF5350),
-    Color(0xFFAB47BC),
-    Color(0xFF5C6BC0),
-    Color(0xFF42A5F5),
-    Color(0xFF26A69A),
-    Color(0xFFFFA726),
-  ];
+  HabitCategory _category = HabitCategory.good; // Default good habit
 
   @override
   void dispose() {
@@ -43,9 +34,9 @@ class _AddHabitPageState extends State<AddHabitPage> {
     final habit = Habit(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name,
-      color: _color,
       type: _timed ? HabitType.timed : HabitType.untimed,
       target: _timed ? _target : Duration.zero,
+      category: _category, // Category determines color automatically
     );
     context.read<HabitsState>().addHabit(habit);
     Navigator.pop(context);
@@ -53,7 +44,6 @@ class _AddHabitPageState extends State<AddHabitPage> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tambah Habit'),
@@ -75,27 +65,59 @@ class _AddHabitPageState extends State<AddHabitPage> {
             ),
           ),
           const SizedBox(height: 16),
-          Text('Pilih Warna', style: Theme.of(context).textTheme.titleSmall),
+          Text('Kategori Habit', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: _palette
-                .map((c) => GestureDetector(
-                      onTap: () => setState(() => _color = c),
-                      child: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: c,
-                          border: Border.all(
-                            color: _color == c ? cs.onPrimary : Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
+          SegmentedButton<HabitCategory>(
+            segments: const [
+              ButtonSegment(
+                value: HabitCategory.good,
+                label: Text('Good Habit'),
+                icon: Icon(Icons.check_circle_outline),
+              ),
+              ButtonSegment(
+                value: HabitCategory.bad,
+                label: Text('Bad Habit'),
+                icon: Icon(Icons.cancel_outlined),
+              ),
+            ],
+            selected: {_category},
+            onSelectionChanged: (Set<HabitCategory> newSelection) {
+              setState(() {
+                _category = newSelection.first;
+              });
+            },
+          ),
+          const SizedBox(height: 8),
+          // Info warna otomatis
+          Row(
+            children: [
+              Icon(
+                Icons.palette_rounded,
+                size: 16,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _category == HabitCategory.good
+                      ? 'Warna: Biru (otomatis untuk good habits)'
+                      : 'Warna: Merah (otomatis untuk bad habits)',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
                       ),
-                    ))
-                .toList(),
+                ),
+              ),
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: _category == HabitCategory.good
+                      ? const Color(0xFF42A5F5)
+                      : const Color(0xFFEF5350),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           SwitchListTile(
@@ -108,7 +130,8 @@ class _AddHabitPageState extends State<AddHabitPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Atur Durasi', style: Theme.of(context).textTheme.titleSmall),
+                Text('Atur Durasi',
+                    style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 8),
                 SizedBox(
                   height: 200,
