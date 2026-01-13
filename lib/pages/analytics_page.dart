@@ -109,21 +109,37 @@ class _MonthlyProgressCard extends StatelessWidget {
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;
     final scheme = Theme.of(context).colorScheme;
 
-    // Calculate daily totals
-    final List<int> dailyTotals = List.generate(daysInMonth, (index) {
+    // Calculate daily totals - separate good and bad
+    final List<int> dailyGoodTotals = List.generate(daysInMonth, (index) {
       final date = DateTime(month.year, month.month, index + 1);
       final key = dateKey(date);
       int total = 0;
-      for (final h in habits) {
+      for (final h in habits.where((h) => h.category == HabitCategory.good)) {
         total += h.completions[key] ?? 0;
       }
       return total;
     });
 
-    final maxDaily =
-        dailyTotals.isEmpty ? 1 : dailyTotals.reduce((a, b) => a > b ? a : b);
-    final minDaily =
-        dailyTotals.isEmpty ? 0 : dailyTotals.reduce((a, b) => a < b ? a : b);
+    final List<int> dailyBadTotals = List.generate(daysInMonth, (index) {
+      final date = DateTime(month.year, month.month, index + 1);
+      final key = dateKey(date);
+      int total = 0;
+      for (final h in habits.where((h) => h.category == HabitCategory.bad)) {
+        total += h.completions[key] ?? 0;
+      }
+      return total;
+    });
+
+    final List<int> dailyTotals = List.generate(daysInMonth, (index) {
+      return dailyGoodTotals[index] + dailyBadTotals[index];
+    });
+
+    final maxDaily = dailyTotals.isEmpty
+        ? 1
+        : dailyTotals.reduce((a, b) => a > b ? a : b).toDouble();
+
+    final totalGood = dailyGoodTotals.reduce((a, b) => a + b);
+    final totalBad = dailyBadTotals.reduce((a, b) => a + b);
     final avgDaily = dailyTotals.isEmpty
         ? 0.0
         : dailyTotals.reduce((a, b) => a + b) / dailyTotals.length;
@@ -148,14 +164,19 @@ class _MonthlyProgressCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Candlestick-style chart
+            // Candlestick-style chart with good (blue) and bad (red) habits stacked
             SizedBox(
               height: 150,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(daysInMonth, (index) {
-                  final count = dailyTotals[index];
-                  final height = maxDaily == 0 ? 0.0 : (count / maxDaily) * 130;
+                  final goodCount = dailyGoodTotals[index];
+                  final badCount = dailyBadTotals[index];
+
+                  final goodHeight =
+                      maxDaily == 0 ? 0.0 : (goodCount / maxDaily) * 130;
+                  final badHeight =
+                      maxDaily == 0 ? 0.0 : (badCount / maxDaily) * 130;
 
                   return Expanded(
                     child: Padding(
@@ -163,15 +184,31 @@ class _MonthlyProgressCard extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Container(
-                            height: height + 10,
-                            decoration: BoxDecoration(
-                              color: count > avgDaily
-                                  ? scheme.primary.withOpacity(0.8)
-                                  : scheme.primary.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(2),
+                          // Stacked bars - bad habits on top, good habits below
+                          if (badCount > 0)
+                            Container(
+                              height: badHeight + 5,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEF5350)
+                                    .withOpacity(0.85), // Red for bad
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(2),
+                                ),
+                              ),
                             ),
-                          ),
+                          if (goodCount > 0)
+                            Container(
+                              height: goodHeight + 5,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF42A5F5)
+                                    .withOpacity(0.85), // Blue for good
+                                borderRadius: badCount > 0
+                                    ? BorderRadius.zero
+                                    : const BorderRadius.vertical(
+                                        top: Radius.circular(2),
+                                      ),
+                              ),
+                            ),
                           const SizedBox(height: 4),
                           if ((index + 1) % 5 == 0)
                             Text(
@@ -192,13 +229,47 @@ class _MonthlyProgressCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
+            // Legend
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF42A5F5).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text('Good Habits',
+                    style: Theme.of(context).textTheme.labelSmall),
+                const SizedBox(width: 16),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF5350).withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text('Bad Habits',
+                    style: Theme.of(context).textTheme.labelSmall),
+              ],
+            ),
+            const SizedBox(height: 12),
+
             // Statistics
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _StatItem('Max', maxDaily.toString(), scheme.primary),
-                _StatItem('Avg', avgDaily.toStringAsFixed(1), scheme.secondary),
-                _StatItem('Min', minDaily.toString(), scheme.tertiary),
+                _StatItem('Total Good', totalGood.toString(),
+                    const Color(0xFF42A5F5)),
+                _StatItem(
+                    'Avg/Day', avgDaily.toStringAsFixed(1), scheme.secondary),
+                _StatItem(
+                    'Total Bad', totalBad.toString(), const Color(0xFFEF5350)),
               ],
             ),
           ],
