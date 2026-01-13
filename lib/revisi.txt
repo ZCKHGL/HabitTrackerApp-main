@@ -1,3 +1,17 @@
-fitur analytics
-habit bagus dan jelek
-tambah fitur heatmap
+fitur analytics(
+    monthly progress (candle statistic)
+    Consistency (percentage)
+    Streak (counting days)
+    habits percentage (list and percentage)
+)
+tambah fitur heatmap(
+    dimana heatmap dapat di tap dan menampilkan ringkasan habit mana saja yang di lakukan baik yang buruk maupun yang baik
+    menambahkan preferensi warna bukan hanya di gunakan sebagai opsi biasa namun sebagai identitas habit(baik/buruk)
+    counting habit??
+)
+
+fitur mengurangi kebiasaan buruk! (beda page fitur sama atau satu page satu heatmap beda kolom habit)
+
+penjelasan dataset buat presentasi
+
+history habit!
