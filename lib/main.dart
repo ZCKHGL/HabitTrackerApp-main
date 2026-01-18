@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'state/app_settings.dart';
 import 'state/habits_state.dart';
@@ -26,14 +28,30 @@ class HabitTrackerApp extends StatelessWidget {
               ? ThemeMode.system
               : (settings.isDark ? ThemeMode.dark : ThemeMode.light);
           return MaterialApp(
-            title: 'Habit Tracker',
-            theme: buildLightTheme(),
-            darkTheme: buildDarkTheme(),
-            themeMode: mode,
-            debugShowCheckedModeBanner: false,
-            // ganti langsung HomePage dengan AppRoot (splash singkat)
-            home: const _AppRoot(),
-          );
+  title: 'Habit Tracker',
+
+  locale: settings.locale,
+
+  supportedLocales: const [
+    Locale('id'),
+    Locale('en'),
+    Locale('ar'),
+  ],
+
+  localizationsDelegates: const [
+    AppLocalizations.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+
+  theme: buildLightTheme(),
+  darkTheme: buildDarkTheme(),
+  themeMode: mode,
+  debugShowCheckedModeBanner: false,
+  home: const _AppRoot(),
+);
+
         },
       ),
     );

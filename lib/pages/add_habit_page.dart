@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../models/habit.dart';
 import '../state/habits_state.dart';
 import '../widgets/wheel_timer_picker.dart';
@@ -24,10 +25,11 @@ class _AddHabitPageState extends State<AddHabitPage> {
   }
 
   void _save() {
+    final l10n = AppLocalizations.of(context)!;
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nama habit tidak boleh kosong')),
+        SnackBar(content: Text(l10n.habitNameEmpty)),
       );
       return;
     }
@@ -44,13 +46,14 @@ class _AddHabitPageState extends State<AddHabitPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Habit'),
+        title: Text(l10n.addHabit),
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text('SIMPAN'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -59,25 +62,25 @@ class _AddHabitPageState extends State<AddHabitPage> {
         children: [
           TextField(
             controller: _nameCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Nama Habit',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.addHabit,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
-          Text('Kategori Habit', style: Theme.of(context).textTheme.titleSmall),
+          Text(l10n.habitCategory, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: 8),
           SegmentedButton<HabitCategory>(
-            segments: const [
+            segments: [
               ButtonSegment(
                 value: HabitCategory.good,
-                label: Text('Good Habit'),
-                icon: Icon(Icons.check_circle_outline),
+                label: Text(l10n.goodHabit),
+                icon: const Icon(Icons.check_circle_outline),
               ),
               ButtonSegment(
                 value: HabitCategory.bad,
-                label: Text('Bad Habit'),
-                icon: Icon(Icons.cancel_outlined),
+                label: Text(l10n.badHabit),
+                icon: const Icon(Icons.cancel_outlined),
               ),
             ],
             selected: {_category},
@@ -100,8 +103,8 @@ class _AddHabitPageState extends State<AddHabitPage> {
               Expanded(
                 child: Text(
                   _category == HabitCategory.good
-                      ? 'Warna: Biru (otomatis untuk good habits)'
-                      : 'Warna: Merah (otomatis untuk bad habits)',
+                      ? l10n.colorBlueAutomatic
+                      : l10n.colorRedAutomatic,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.outline,
                       ),
@@ -121,7 +124,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
           ),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text('Gunakan Timer'),
+            title: Text(l10n.useTimer),
             value: _timed,
             onChanged: (v) => setState(() => _timed = v),
           ),
@@ -130,7 +133,7 @@ class _AddHabitPageState extends State<AddHabitPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Atur Durasi',
+                Text(l10n.setDuration,
                     style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 8),
                 SizedBox(

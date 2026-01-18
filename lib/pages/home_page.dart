@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../state/app_settings.dart';
 import '../state/habits_state.dart';
 import '../widgets/heatmap_calendar.dart';
@@ -8,6 +9,7 @@ import '../widgets/habit_card.dart';
 import 'add_habit_page.dart';
 import 'analytics_page.dart';
 import 'history_page.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -98,12 +100,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hs = context.watch<HabitsState>();
     final aggregated = hs.aggregatedCompletions();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Habit Tracker'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             onPressed: () {
@@ -113,7 +116,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               );
             },
             icon: const Icon(Icons.bar_chart_rounded),
-            tooltip: 'Analytics',
+            tooltip: l10n.analytics,
           ),
           IconButton(
             onPressed: () {
@@ -123,13 +126,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               );
             },
             icon: const Icon(Icons.history_rounded),
-            tooltip: 'History',
+            tooltip: l10n.history,
           ),
           Builder(
             builder: (ctx) => IconButton(
               onPressed: () => Scaffold.of(ctx).openEndDrawer(),
               icon: const Icon(Icons.settings_rounded),
-              tooltip: 'Setting',
+              tooltip: l10n.settings,
             ),
           ),
         ],
@@ -173,7 +176,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               padding: const EdgeInsets.only(top: 40),
               child: Center(
                 child: Text(
-                  'Belum ada habit.\nTap + untuk menambahkan.',
+                  l10n.emptyHabit,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
@@ -198,16 +201,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   return await showDialog<bool>(
                         context: context,
                         builder: (_) => AlertDialog(
-                          title: const Text('Hapus Habit?'),
-                          content:
-                              Text('Hapus "${h.name}" beserta riwayatnya?'),
+                          title: Text(l10n.deleteHabit),
+                          content: Text(l10n.deleteConfirm(h.name)),
                           actions: [
                             TextButton(
                                 onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Batal')),
+                                child: Text(l10n.cancel)),
                             FilledButton.tonal(
                                 onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Hapus')),
+                                child: Text(l10n.delete)),
                           ],
                         ),
                       ) ??
@@ -217,7 +219,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   await context.read<HabitsState>().removeHabit(h.id);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Habit "${h.name}" dihapus')),
+                      SnackBar(content: Text(l10n.habitDeleted(h.name))),
                     );
                   }
                 },
@@ -235,12 +237,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           );
         },
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Tambah'),
+        label: Text(l10n.add),
       ),
     );
   }
 
   Widget _legend(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textStyle = Theme.of(context).textTheme.labelSmall;
     final colors = [
       Colors.lightBlue.shade50,
@@ -265,28 +268,46 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
         const SizedBox(height: 4),
         Text(
-            'Biru terang: aktivitas sedikit  •  Biru menyala: aktivitas banyak',
+            '${l10n.lightActivity}  •  ${l10n.highActivity}',
             style: textStyle),
       ],
     );
   }
 
   String _monthName(int m) {
+    final l10n = AppLocalizations.of(context)!;
     const names = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember'
+      'january',
+      'february',
+      'march',
+      'april',
+      'may',
+      'june',
+      'july',
+      'august',
+      'september',
+      'october',
+      'november',
+      'december'
     ];
-    return names[m - 1];
+    final monthKey = names[m - 1];
+    
+    // Get month name based on locale
+    switch(monthKey) {
+      case 'january': return l10n.january;
+      case 'february': return l10n.february;
+      case 'march': return l10n.march;
+      case 'april': return l10n.april;
+      case 'may': return l10n.may;
+      case 'june': return l10n.june;
+      case 'july': return l10n.july;
+      case 'august': return l10n.august;
+      case 'september': return l10n.september;
+      case 'october': return l10n.october;
+      case 'november': return l10n.november;
+      case 'december': return l10n.december;
+      default: return '';
+    }
   }
 }
 
@@ -295,6 +316,7 @@ class _SettingsDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<AppSettings>();
     final writer = context.read<AppSettings>();
     return Drawer(
@@ -303,23 +325,48 @@ class _SettingsDrawer extends StatelessWidget {
           padding: const EdgeInsets.all(0),
           children: [
             ListTile(
-              title: const Text('Pengaturan'),
+              title: Text(l10n.settings),
               dense: true,
             ),
             const Divider(),
             SwitchListTile(
-              title: const Text('Ikuti Tema Sistem'),
+              title: Text(l10n.followSystem),
               value: settings.followSystem,
               onChanged: (v) => writer.setFollowSystem(v),
             ),
             if (!settings.followSystem)
               ListTile(
-                title: const Text('Mode Gelap'),
+                title: Text(l10n.darkMode),
                 trailing: Switch(
                   value: settings.isDark,
                   onChanged: (v) => writer.setDark(v),
                 ),
               ),
+            ListTile(
+              title: Text(l10n.language),
+              trailing: DropdownButton<Locale>(
+                value: settings.locale,
+                onChanged: (locale) {
+                  if (locale != null) {
+                    writer.setLocale(locale);
+                  }
+                },
+                items: const [
+                  DropdownMenuItem(
+                    value: Locale('id'),
+                    child: Text('Indonesia'),
+                  ),
+                  DropdownMenuItem(
+                    value: Locale('en'),
+                    child: Text('English'),
+                  ),
+                  DropdownMenuItem(
+                    value: Locale('ar'),
+                    child: Text('العربية'),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

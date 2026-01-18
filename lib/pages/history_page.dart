@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../state/habits_state.dart';
 import '../models/habit.dart';
 
@@ -8,6 +9,7 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hs = context.watch<HabitsState>();
 
     // Collect all completion dates from all habits
@@ -31,7 +33,7 @@ class HistoryPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('History'),
+        title: Text(l10n.history),
       ),
       body: sortedDates.isEmpty
           ? Center(
@@ -45,14 +47,14 @@ class HistoryPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No history yet',
+                    l10n.noHistory,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Theme.of(context).colorScheme.outline,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Start completing habits to see your history',
+                    l10n.startCompletingHabits,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.outline,
                         ),
@@ -87,32 +89,33 @@ class _HistoryDateCard extends StatelessWidget {
     required this.entries,
   });
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final dateOnly = DateTime(date.year, date.month, date.day);
 
     if (dateOnly == today) {
-      return 'Today';
+      return l10n.today;
     } else if (dateOnly == yesterday) {
-      return 'Yesterday';
+      return l10n.yesterday;
     } else {
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
+      final monthNames = [
+        l10n.jan,
+        l10n.feb,
+        l10n.mar,
+        l10n.apr,
+        l10n.may,
+        l10n.jun,
+        l10n.jul,
+        l10n.aug,
+        l10n.sep,
+        l10n.oct,
+        l10n.nov,
+        l10n.dec
       ];
-      return '${months[date.month - 1]} ${date.day}, ${date.year}';
+      return '${monthNames[date.month - 1]} ${date.day}, ${date.year}';
     }
   }
 
@@ -162,7 +165,7 @@ class _HistoryDateCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    _formatDate(date),
+                    _formatDate(context, date),
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: scheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,

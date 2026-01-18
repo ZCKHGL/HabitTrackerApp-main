@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 import '../state/habits_state.dart';
 import '../models/habit.dart';
 
@@ -30,11 +31,12 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hs = context.watch<HabitsState>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analytics'),
+        title: Text(l10n.analytics),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
