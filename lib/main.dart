@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'state/app_settings.dart';
+import 'state/auth_state.dart';
 import 'state/habits_state.dart';
 import 'theme.dart';
 import 'pages/home_page.dart';
@@ -20,6 +21,7 @@ class HabitTrackerApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppSettings()),
+        ChangeNotifierProvider(create: (_) => AuthState()),
         ChangeNotifierProvider(create: (_) => HabitsState()),
       ],
       child: Consumer<AppSettings>(
@@ -68,18 +70,48 @@ class _AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<_AppRoot> {
   bool _ready = false;
+  String? _lastUserId;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    if (!mounted) return;
+    
+    final auth = context.read<AuthState>();
+    final habits = context.read<HabitsState>();
+    
+    // Wait for auth to be initialized
+    while (!auth.initialized) {
+      await Future.delayed(const Duration(milliseconds: 50));
       if (!mounted) return;
-      setState(() => _ready = true);
-    });
+    }
+    
+    _lastUserId = auth.userId;
+    await habits.onUserChanged(auth.userId);
+    
+    if (!mounted) return;
+    setState(() => _ready = true);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Listen for auth changes and reload habits
+    final auth = context.watch<AuthState>();
+    
+    // When auth state changes, reload habits for new user (only if userId changed)
+    if (_ready && _lastUserId != auth.userId) {
+      _lastUserId = auth.userId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<HabitsState>().onUserChanged(auth.userId);
+        }
+      });
+    }
+
     if (!_ready) {
       return Scaffold(
         body: Center(

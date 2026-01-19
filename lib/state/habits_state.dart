@@ -34,7 +34,16 @@ class HabitsState extends ChangeNotifier {
       if (changed) notifyListeners();
     });
 
-    _loadFromDb();
+    // Don't load habits here - wait for onUserChanged to be called
+    // This ensures we load the correct user's habits after auth is ready
+  }
+
+  /// Call this when user changes (login/logout) to reload data
+  Future<void> onUserChanged(String userId) async {
+    debugPrint('HabitsState.onUserChanged: Setting userId to "$userId"');
+    _db.setUserId(userId);
+    await _loadFromDb();
+    debugPrint('HabitsState.onUserChanged: Loaded ${_habits.length} habits for user "$userId"');
   }
 
   Future<void> _loadFromDb() async {
@@ -46,6 +55,7 @@ class HabitsState extends ChangeNotifier {
   }
 
   Future<void> addHabit(Habit habit) async {
+    debugPrint('HabitsState.addHabit: Adding habit "${habit.name}" for user "${_db.userId}"');
     _habits.add(habit);
     notifyListeners();
     await _db.insertHabit(habit);

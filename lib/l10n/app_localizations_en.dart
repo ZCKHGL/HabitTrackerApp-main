@@ -213,4 +213,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get colorRedAutomatic => 'Color: Red (automatic for bad habits)';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get loginSubtitle => 'Sign in to sync your habits across devices';
+
+  @override
+  String get createAccountSubtitle => 'Create an account to sync your habits';
+
+  @override
+  String get loginSubtitleShort => 'Sync your data across devices';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get haveAccount => 'Already have an account?';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get guestDescription => 'Using app without account';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to logout?';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get emailInvalid => 'Please enter a valid email';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get enterEmailFirst => 'Please enter your email first';
+
+  @override
+  String get passwordResetSent => 'Password reset email sent';
+
+  @override
+  String get accountCreated => 'Account created successfully! Please login.';
 }

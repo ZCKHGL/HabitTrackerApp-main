@@ -10,6 +10,19 @@ class HabitsDb {
 
   Database? _db;
 
+  // Current user ID (defaults to 'guest' for anonymous users)
+  String _userId = 'guest';
+  String get userId => _userId;
+
+  /// Set the current user ID. Call this when user logs in/out.
+  void setUserId(String id) {
+    debugPrint('HabitsDb.setUserId: Changing from "$_userId" to "$id"');
+    _userId = id;
+    // Clear memory cache when user changes
+    _memHabits.clear();
+    _memCompletions.clear();
+  }
+
   // Fallback in-memory untuk web atau saat DB gagal dibuka
   bool _fallbackMemory = kIsWeb;
   final Map<String, Map<String, Object?>> _memHabits = {};
@@ -26,7 +39,7 @@ class HabitsDb {
       final path = p.join(dir, 'habits.db');
       _db = await openDatabase(
         path,
-        version: 3, // increment version untuk remove color column
+        version: 4, // increment version for multi-user support
         onConfigure: (db) async {
           await db.execute('PRAGMA foreign_keys = ON');
         },
@@ -34,6 +47,7 @@ class HabitsDb {
           await db.execute('''
           CREATE TABLE habits(
             id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL DEFAULT 'guest',
             name TEXT NOT NULL,
             type INTEGER NOT NULL,       -- 0 untimed, 1 timed
             targetSeconds INTEGER NOT NULL DEFAULT 0,
@@ -48,6 +62,10 @@ class HabitsDb {
             PRIMARY KEY(habit_id, date),
             FOREIGN KEY(habit_id) REFERENCES habits(id) ON DELETE CASCADE
           )
+          ''');
+          // Create index for faster user-based queries
+          await db.execute('''
+          CREATE INDEX idx_habits_user_id ON habits(user_id)
           ''');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
@@ -77,6 +95,15 @@ class HabitsDb {
             // Rename new table
             await db.execute('ALTER TABLE habits_new RENAME TO habits');
           }
+          if (oldVersion < 4) {
+            // Add user_id column for multi-user support
+            await db.execute(
+                'ALTER TABLE habits ADD COLUMN user_id TEXT NOT NULL DEFAULT \'guest\'');
+            // Create index for faster user-based queries
+            await db.execute('''
+              CREATE INDEX IF NOT EXISTS idx_habits_user_id ON habits(user_id)
+            ''');
+          }
         },
       );
       return _db!;
@@ -89,7 +116,10 @@ class HabitsDb {
 
   Future<List<Habit>> loadHabits() async {
     if (_fallbackMemory) {
-      final list = _memHabits.values.map(Habit.fromMap).toList()
+      final list = _memHabits.values
+          .where((m) => m['user_id'] == _userId)
+          .map(Habit.fromMap)
+          .toList()
         ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
       for (final h in list) {
         final comps = _memCompletions[h.id];
@@ -100,7 +130,12 @@ class HabitsDb {
       return list;
     }
     final db = await _open();
-    final rows = await db.query('habits', orderBy: 'name COLLATE NOCASE ASC');
+    final rows = await db.query(
+      'habits',
+      where: 'user_id = ?',
+      whereArgs: [_userId],
+      orderBy: 'name COLLATE NOCASE ASC',
+    );
     final List<Habit> list = rows.map(Habit.fromMap).toList();
     for (final h in list) {
       final comps = await db.query(
@@ -118,12 +153,15 @@ class HabitsDb {
   }
 
   Future<void> insertHabit(Habit h) async {
+    final map = h.toMap();
+    map['user_id'] = _userId;
+    debugPrint('HabitsDb.insertHabit: Inserting habit "${h.name}" with user_id="$_userId"');
     if (_fallbackMemory) {
-      _memHabits[h.id] = h.toMap();
+      _memHabits[h.id] = map;
       return;
     }
     final db = await _open();
-    await db.insert('habits', h.toMap(),
+    await db.insert('habits', map,
         conflictAlgorithm: ConflictAlgorithm.abort);
   }
 

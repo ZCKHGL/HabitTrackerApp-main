@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../state/app_settings.dart';
+import '../state/auth_state.dart';
 import '../state/habits_state.dart';
 import '../widgets/heatmap_calendar.dart';
 import '../widgets/habit_card.dart';
 import 'add_habit_page.dart';
 import 'analytics_page.dart';
 import 'history_page.dart';
+import 'login_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -319,16 +321,123 @@ class _SettingsDrawer extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<AppSettings>();
     final writer = context.read<AppSettings>();
+    final auth = context.watch<AuthState>();
+    final theme = Theme.of(context);
+
     return Drawer(
       child: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(0),
           children: [
+            // Account Section Header
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: theme.colorScheme.primary,
+                    child: auth.isLoggedIn
+                        ? Text(
+                            auth.displayName[0].toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          )
+                        : Icon(
+                            Icons.person_outline,
+                            size: 30,
+                            color: theme.colorScheme.onPrimary,
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    auth.isLoggedIn ? auth.displayName : l10n.guest,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (auth.isLoggedIn && auth.email != null)
+                    Text(
+                      auth.email!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  if (!auth.isLoggedIn)
+                    Text(
+                      l10n.guestDescription,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            // Login/Logout Button
+            if (auth.isLoggedIn)
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: Text(l10n.logout),
+                onTap: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: Text(l10n.logout),
+                      content: Text(l10n.logoutConfirm),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text(l10n.cancel),
+                        ),
+                        FilledButton.tonal(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(l10n.logout),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirm == true && context.mounted) {
+                    await auth.signOut();
+                    // Reload habits for guest user
+                    if (context.mounted) {
+                      await context.read<HabitsState>().onUserChanged('guest');
+                      Navigator.pop(context); // Close drawer
+                    }
+                  }
+                },
+              )
+            else
+              ListTile(
+                leading: const Icon(Icons.login),
+                title: Text(l10n.login),
+                subtitle: Text(l10n.loginSubtitleShort),
+                onTap: () async {
+                  Navigator.pop(context); // Close drawer first
+                  final result = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                  if (result == true && context.mounted) {
+                    // Reload habits for new user
+                    final newAuth = context.read<AuthState>();
+                    await context.read<HabitsState>().onUserChanged(newAuth.userId);
+                  }
+                },
+              ),
+
+            const Divider(),
             ListTile(
               title: Text(l10n.settings),
               dense: true,
             ),
-            const Divider(),
             SwitchListTile(
               title: Text(l10n.followSystem),
               value: settings.followSystem,

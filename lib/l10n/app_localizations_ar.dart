@@ -213,4 +213,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get colorRedAutomatic => 'اللون: أحمر (تلقائي للعادات السيئة)';
+
+  @override
+  String get login => 'تسجيل الدخول';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get forgotPassword => 'نسيت كلمة المرور؟';
+
+  @override
+  String get loginSubtitle => 'قم بتسجيل الدخول لمزامنة عاداتك عبر الأجهزة';
+
+  @override
+  String get createAccountSubtitle => 'أنشئ حسابًا لمزامنة عاداتك';
+
+  @override
+  String get loginSubtitleShort => 'مزامنة بياناتك عبر الأجهزة';
+
+  @override
+  String get noAccount => 'ليس لديك حساب؟';
+
+  @override
+  String get haveAccount => 'هل لديك حساب بالفعل؟';
+
+  @override
+  String get guest => 'ضيف';
+
+  @override
+  String get guestDescription => 'استخدام التطبيق بدون حساب';
+
+  @override
+  String get logoutConfirm => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get emailRequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get emailInvalid => 'الرجاء إدخال بريد إلكتروني صالح';
+
+  @override
+  String get passwordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get passwordTooShort => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get enterEmailFirst => 'الرجاء إدخال بريدك الإلكتروني أولاً';
+
+  @override
+  String get passwordResetSent => 'تم إرسال بريد إعادة تعيين كلمة المرور';
+
+  @override
+  String get accountCreated => 'تم إنشاء الحساب بنجاح! يرجى تسجيل الدخول.';
 }

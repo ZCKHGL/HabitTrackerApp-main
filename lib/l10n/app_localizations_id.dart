@@ -213,4 +213,69 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get colorRedAutomatic => 'Warna: Merah (otomatis untuk bad habits)';
+
+  @override
+  String get login => 'Masuk';
+
+  @override
+  String get logout => 'Keluar';
+
+  @override
+  String get createAccount => 'Buat Akun';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Kata Sandi';
+
+  @override
+  String get forgotPassword => 'Lupa Kata Sandi?';
+
+  @override
+  String get loginSubtitle =>
+      'Masuk untuk menyinkronkan kebiasaan Anda di berbagai perangkat';
+
+  @override
+  String get createAccountSubtitle =>
+      'Buat akun untuk menyinkronkan kebiasaan Anda';
+
+  @override
+  String get loginSubtitleShort => 'Sinkronkan data di berbagai perangkat';
+
+  @override
+  String get noAccount => 'Belum punya akun?';
+
+  @override
+  String get haveAccount => 'Sudah punya akun?';
+
+  @override
+  String get guest => 'Tamu';
+
+  @override
+  String get guestDescription => 'Menggunakan aplikasi tanpa akun';
+
+  @override
+  String get logoutConfirm => 'Apakah Anda yakin ingin keluar?';
+
+  @override
+  String get emailRequired => 'Email wajib diisi';
+
+  @override
+  String get emailInvalid => 'Masukkan email yang valid';
+
+  @override
+  String get passwordRequired => 'Kata sandi wajib diisi';
+
+  @override
+  String get passwordTooShort => 'Kata sandi minimal 6 karakter';
+
+  @override
+  String get enterEmailFirst => 'Masukkan email Anda terlebih dahulu';
+
+  @override
+  String get passwordResetSent => 'Email reset kata sandi telah dikirim';
+
+  @override
+  String get accountCreated => 'Akun berhasil dibuat! Silakan masuk.';
 }
