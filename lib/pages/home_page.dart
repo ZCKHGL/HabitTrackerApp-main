@@ -12,7 +12,6 @@ import 'analytics_page.dart';
 import 'history_page.dart';
 import 'login_page.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -105,6 +104,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     final l10n = AppLocalizations.of(context)!;
     final hs = context.watch<HabitsState>();
     final aggregated = hs.aggregatedCompletions();
+    final goodCompletions = hs.aggregatedGoodCompletions();
+    final badCompletions = hs.aggregatedBadCompletions();
 
     return Scaffold(
       appBar: AppBar(
@@ -166,6 +167,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           const SizedBox(height: 8),
           HeatmapCalendar(
             completions: aggregated,
+            goodCompletions: goodCompletions,
+            badCompletions: badCompletions,
             month: _month,
             showTitle: false,
             habits: hs.habits, // Pass habits untuk detail
@@ -247,30 +250,70 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget _legend(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final textStyle = Theme.of(context).textTheme.labelSmall;
-    final colors = [
-      Colors.lightBlue.shade50,
-      Colors.lightBlue.shade100,
-      Colors.lightBlue.shade200,
-      Colors.lightBlue.shade400,
-      Colors.lightBlue.shade700,
+
+    // Good habits: light blue to dark blue
+    final goodColors = [
+      const Color(0xFFE3F2FD), // Light blue
+      const Color(0xFF90CAF9),
+      const Color(0xFF42A5F5),
+      const Color(0xFF1E88E5),
+      const Color(0xFF1565C0), // Dark blue
     ];
+
+    // Bad habits: light red to dark red
+    final badColors = [
+      const Color(0xFFFFEBEE), // Light red
+      const Color(0xFFEF9A9A),
+      const Color(0xFFEF5350),
+      const Color(0xFFE53935),
+      const Color(0xFFC62828), // Dark red
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Wrap(
-          spacing: 6,
-          children: colors
-              .map((c) => Container(
-                    width: 18,
-                    height: 18,
-                    decoration: BoxDecoration(
-                        color: c, borderRadius: BorderRadius.circular(4)),
-                  ))
-              .toList(),
+        // Good habits legend
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle_outline,
+                size: 14, color: Colors.blue.shade700),
+            const SizedBox(width: 4),
+            Text('Good: ',
+                style: textStyle?.copyWith(fontWeight: FontWeight.bold)),
+            ...goodColors.map((c) => Container(
+                  width: 16,
+                  height: 16,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: c,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                )),
+          ],
+        ),
+        const SizedBox(height: 6),
+        // Bad habits legend
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.cancel_outlined, size: 14, color: Colors.red.shade700),
+            const SizedBox(width: 4),
+            Text('Bad: ',
+                style: textStyle?.copyWith(fontWeight: FontWeight.bold)),
+            ...badColors.map((c) => Container(
+                  width: 16,
+                  height: 16,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: c,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                )),
+          ],
         ),
         const SizedBox(height: 4),
-        Text(
-            '${l10n.lightActivity}  •  ${l10n.highActivity}',
+        Text('${l10n.lightActivity}  →  ${l10n.highActivity}',
             style: textStyle),
       ],
     );
@@ -293,22 +336,35 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       'december'
     ];
     final monthKey = names[m - 1];
-    
+
     // Get month name based on locale
-    switch(monthKey) {
-      case 'january': return l10n.january;
-      case 'february': return l10n.february;
-      case 'march': return l10n.march;
-      case 'april': return l10n.april;
-      case 'may': return l10n.may;
-      case 'june': return l10n.june;
-      case 'july': return l10n.july;
-      case 'august': return l10n.august;
-      case 'september': return l10n.september;
-      case 'october': return l10n.october;
-      case 'november': return l10n.november;
-      case 'december': return l10n.december;
-      default: return '';
+    switch (monthKey) {
+      case 'january':
+        return l10n.january;
+      case 'february':
+        return l10n.february;
+      case 'march':
+        return l10n.march;
+      case 'april':
+        return l10n.april;
+      case 'may':
+        return l10n.may;
+      case 'june':
+        return l10n.june;
+      case 'july':
+        return l10n.july;
+      case 'august':
+        return l10n.august;
+      case 'september':
+        return l10n.september;
+      case 'october':
+        return l10n.october;
+      case 'november':
+        return l10n.november;
+      case 'december':
+        return l10n.december;
+      default:
+        return '';
     }
   }
 }
@@ -333,7 +389,8 @@ class _SettingsDrawer extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                color:
+                    theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,7 +485,9 @@ class _SettingsDrawer extends StatelessWidget {
                   if (result == true && context.mounted) {
                     // Reload habits for new user
                     final newAuth = context.read<AuthState>();
-                    await context.read<HabitsState>().onUserChanged(newAuth.userId);
+                    await context
+                        .read<HabitsState>()
+                        .onUserChanged(newAuth.userId);
                   }
                 },
               ),

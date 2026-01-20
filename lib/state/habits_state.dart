@@ -43,7 +43,8 @@ class HabitsState extends ChangeNotifier {
     debugPrint('HabitsState.onUserChanged: Setting userId to "$userId"');
     _db.setUserId(userId);
     await _loadFromDb();
-    debugPrint('HabitsState.onUserChanged: Loaded ${_habits.length} habits for user "$userId"');
+    debugPrint(
+        'HabitsState.onUserChanged: Loaded ${_habits.length} habits for user "$userId"');
   }
 
   Future<void> _loadFromDb() async {
@@ -55,7 +56,8 @@ class HabitsState extends ChangeNotifier {
   }
 
   Future<void> addHabit(Habit habit) async {
-    debugPrint('HabitsState.addHabit: Adding habit "${habit.name}" for user "${_db.userId}"');
+    debugPrint(
+        'HabitsState.addHabit: Adding habit "${habit.name}" for user "${_db.userId}"');
     _habits.add(habit);
     notifyListeners();
     await _db.insertHabit(habit);
@@ -132,6 +134,32 @@ class HabitsState extends ChangeNotifier {
   Map<DateTime, int> aggregatedCompletions() {
     final Map<DateTime, int> acc = {};
     for (final h in _habits) {
+      h.completions.forEach((k, v) {
+        final d = DateTime.parse(k);
+        final day = DateTime(d.year, d.month, d.day);
+        acc[day] = (acc[day] ?? 0) + v;
+      });
+    }
+    return acc;
+  }
+
+  // Agregasi untuk heatmap: total GOOD habit completions per hari
+  Map<DateTime, int> aggregatedGoodCompletions() {
+    final Map<DateTime, int> acc = {};
+    for (final h in _habits.where((h) => h.category == HabitCategory.good)) {
+      h.completions.forEach((k, v) {
+        final d = DateTime.parse(k);
+        final day = DateTime(d.year, d.month, d.day);
+        acc[day] = (acc[day] ?? 0) + v;
+      });
+    }
+    return acc;
+  }
+
+  // Agregasi untuk heatmap: total BAD habit completions per hari
+  Map<DateTime, int> aggregatedBadCompletions() {
+    final Map<DateTime, int> acc = {};
+    for (final h in _habits.where((h) => h.category == HabitCategory.bad)) {
       h.completions.forEach((k, v) {
         final d = DateTime.parse(k);
         final day = DateTime(d.year, d.month, d.day);

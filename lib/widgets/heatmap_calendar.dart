@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/habit.dart';
 
 class HeatmapCalendar extends StatelessWidget {
-  final Map<DateTime, int> completions; // date -> count
+  final Map<DateTime, int> completions; // date -> count (total)
+  final Map<DateTime, int>? goodCompletions; // date -> good habit count
+  final Map<DateTime, int>? badCompletions; // date -> bad habit count
   final DateTime month; // any day in month
   final int maxScale; // scale intensity
   final bool showTitle; // whether to show the title
@@ -14,6 +16,8 @@ class HeatmapCalendar extends StatelessWidget {
     super.key,
     required this.completions,
     required this.month,
+    this.goodCompletions,
+    this.badCompletions,
     this.maxScale = 5,
     this.showTitle = true,
     this.onlyToday = false,
@@ -23,17 +27,70 @@ class HeatmapCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    // Color constants for good/bad habits
+    const Color goodColorLight = Color(0xFFE3F2FD); // Light blue
+    const Color goodColorDark = Color(0xFF1565C0); // Dark blue
+    const Color badColorLight = Color(0xFFFFEBEE); // Light red
+    const Color badColorDark = Color(0xFFC62828); // Dark red
+
+    // Function to calculate cell color based on good/bad habit counts
+    Color getCellColor(DateTime date) {
+      final day = DateTime(date.year, date.month, date.day);
+      final goodCount = goodCompletions?[day] ?? 0;
+      final badCount = badCompletions?[day] ?? 0;
+      final totalCount = completions[day] ?? 0;
+
+      if (totalCount <= 0) {
+        return scheme.surfaceContainerHighest.withValues(alpha: 0.30);
+      }
+
+      // If we have separate good/bad data
+      if (goodCompletions != null && badCompletions != null) {
+        // Pure bad habits day - light red to dark red gradient
+        if (badCount > 0 && goodCount == 0) {
+          final t = (badCount / maxScale).clamp(0.0, 1.0);
+          return Color.lerp(badColorLight, badColorDark, t)!
+              .withValues(alpha: 0.90);
+        }
+
+        // Pure good habits day - light green to dark green gradient
+        if (goodCount > 0 && badCount == 0) {
+          final t = (goodCount / maxScale).clamp(0.0, 1.0);
+          return Color.lerp(goodColorLight, goodColorDark, t)!
+              .withValues(alpha: 0.90);
+        }
+
+        // Mixed day - blend colors based on ratio
+        if (goodCount > 0 && badCount > 0) {
+          final total = goodCount + badCount;
+          final badRatio = badCount / total;
+
+          // Calculate intensity for each
+          final badIntensity = (badCount / maxScale).clamp(0.0, 1.0);
+          final goodIntensity = (goodCount / maxScale).clamp(0.0, 1.0);
+
+          final badColor =
+              Color.lerp(badColorLight, badColorDark, badIntensity)!;
+          final goodColor =
+              Color.lerp(goodColorLight, goodColorDark, goodIntensity)!;
+
+          // Blend based on ratio
+          return Color.lerp(goodColor, badColor, badRatio)!
+              .withValues(alpha: 0.90);
+        }
+      }
+
+      // Fallback to original behavior (primary color)
+      final t = (totalCount / maxScale).clamp(0.0, 1.0);
+      return Color.lerp(scheme.surfaceContainerHighest, scheme.primary, t)!
+          .withValues(alpha: 0.85);
+    }
+
     if (onlyToday) {
       final today = DateTime.now();
       final day = DateTime(today.year, today.month, today.day);
-      final count = completions[day] ?? 0;
-      final scheme = Theme.of(context).colorScheme;
-      Color cellColor(int c) {
-        if (c <= 0) return scheme.surfaceContainerHighest.withOpacity(0.3);
-        final t = (c / maxScale).clamp(0.0, 1.0);
-        return Color.lerp(scheme.surfaceContainerHighest, scheme.primary, t)!
-            .withValues(alpha: 0.85);
-      }
 
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +99,7 @@ class HeatmapCalendar extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: cellColor(count),
+              color: getCellColor(day),
               borderRadius: BorderRadius.circular(8),
             ),
             alignment: Alignment.center,
@@ -58,18 +115,6 @@ class HeatmapCalendar extends StatelessWidget {
     final startWeekday = firstDay.weekday % 7; // make Sunday=0
     final totalCells = startWeekday + daysInMonth;
     final rows = (totalCells / 7).ceil();
-
-    final scheme = Theme.of(context).colorScheme;
-    final base = scheme.primary;
-
-    Color cellColor(int count) {
-      if (count <= 0) {
-        return scheme.surfaceContainerHighest.withValues(alpha: 0.30);
-      }
-      final t = (count / maxScale).clamp(0.0, 1.0);
-      final c = Color.lerp(scheme.surfaceContainerHighest, base, t)!;
-      return c.withValues(alpha: 0.85);
-    }
 
     return Column(
       children: [
@@ -110,7 +155,7 @@ class HeatmapCalendar extends StatelessWidget {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: cellColor(count),
+                  color: getCellColor(date),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
