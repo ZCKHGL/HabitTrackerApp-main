@@ -7,6 +7,7 @@ import 'state/auth_state.dart';
 import 'state/habits_state.dart';
 import 'theme.dart';
 import 'pages/home_page.dart';
+import 'pages/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +71,7 @@ class _AppRoot extends StatefulWidget {
 
 class _AppRootState extends State<_AppRoot> {
   bool _ready = false;
+  bool _showSplash = true;
   String? _lastUserId;
 
   @override
@@ -97,8 +99,19 @@ class _AppRootState extends State<_AppRoot> {
     setState(() => _ready = true);
   }
 
+  void _onSplashComplete() {
+    if (mounted) {
+      setState(() => _showSplash = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Show splash screen first
+    if (_showSplash) {
+      return SplashScreen(onComplete: _onSplashComplete);
+    }
+
     // Listen for auth changes and reload habits
     final auth = context.watch<AuthState>();
     

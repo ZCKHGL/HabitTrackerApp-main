@@ -17,7 +17,7 @@ class HabitsState extends ChangeNotifier {
         final before = h.elapsed;
         h.tick();
 
-        // Jika mencapai target: kunci di 100% dan auto-pause (TANPA mencatat completion).
+        // Jika mencapai target: kunci di 100%, auto-pause, dan catat completion.
         if (h.isTimed &&
             !h.lockAtFull &&
             h.target > Duration.zero &&
@@ -26,6 +26,12 @@ class HabitsState extends ChangeNotifier {
           h.status = TimerStatus.paused;
           h.lockAtFull = true;
           changed = true;
+
+          // Catat completion otomatis ketika mencapai target
+          final key = dateKey(DateTime.now());
+          h.completions[key] = (h.completions[key] ?? 0) + 1;
+          await _db.incrementCompletion(h.id, key, 1);
+
           continue;
         }
 
