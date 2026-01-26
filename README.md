@@ -1,237 +1,345 @@
-# Habit Tracker App
+# 📱 Habit Tracker App
 
-A beautiful and minimalist Flutter application to track your good and bad habits with powerful analytics and visualizations.
+<div align="center">
 
-## 📱 Features
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 
-### Core Features
-- ✅ **Track Habits**: Create unlimited good and bad habits
-- ⏱️ **Timed & Untimed**: Support for both regular habits and time-based habits
-- 🎨 **Color Identity**: Assign unique colors to identify each habit
-- 📊 **Heatmap Calendar**: Visual representation of your habit completion
-- 📈 **Analytics Dashboard**: Comprehensive statistics and insights
-- 📜 **History**: Complete chronological history of all completions
-- 🌓 **Dark Mode**: Beautiful light and dark themes
+**Aplikasi pelacak kebiasaan yang minimalis dan cantik untuk membantu Anda membangun kebiasaan baik dan menghentikan kebiasaan buruk**
 
-### Analytics Features
-1. **Monthly Progress (Candlestick Chart)**
-   - Daily completion statistics
-   - Maximum, minimum, and average metrics
-   - Visual bar chart representation
+[Fitur](#-fitur) • [Instalasi](#-instalasi) • [Panduan Penggunaan](#-panduan-penggunaan) • [Teknologi](#-teknologi)
 
-2. **Consistency Percentage**
-   - Overall consistency score
-   - Days completed vs total days
-   - Progress visualization
+</div>
 
-3. **Streak Counter**
-   - Consecutive days tracking
-   - Top 5 longest streaks
-   - Real-time streak updates
+---
 
-4. **Habits Completion Rate**
-   - Individual habit performance
-   - Percentage-based progress bars
-   - Completion vs target comparison
+## 📖 Tentang Proyek
 
-### Enhanced Heatmap
-- **Interactive Calendar**: Tap any date to see details
-- **Good vs Bad Habits**: Visual separation with icons
-- **Color Coding**: Intensity-based coloring (0-5+ scale)
-- **Monthly Navigation**: Easy month switching
+**Habit Tracker App** adalah aplikasi Flutter yang dirancang untuk membantu pengguna melacak dan mengelola kebiasaan sehari-hari mereka. Aplikasi ini mendukung pelacakan kebiasaan baik (good habits) dan kebiasaan buruk (bad habits) dengan visualisasi heatmap kalender, analitik lengkap, dan timer untuk kebiasaan berbasis waktu.
 
-### History Tracking
-- **Chronological View**: Newest entries first
-- **Categorized Display**: Good and bad habits separated
-- **Daily Summary**: Total completions per day
-- **Detailed Information**: Which habits were completed and how many times
+### ✨ Mengapa Menggunakan Habit Tracker?
 
-## 🗄️ Database
+- 🎯 **Fokus pada Tujuan**: Lacak kemajuan harian Anda menuju kebiasaan yang lebih baik
+- 📊 **Visualisasi Data**: Lihat pola kebiasaan Anda melalui heatmap dan grafik
+- 🔒 **Privasi Terjamin**: Semua data tersimpan lokal di perangkat Anda
+- 🌐 **Multi-bahasa**: Mendukung Bahasa Indonesia, Inggris, dan Arab
+- 🌓 **Mode Gelap**: Nyaman digunakan kapan saja
 
-The app uses **SQLite** for local data storage with the following structure:
+---
 
-### Tables
+## 🚀 Fitur
 
-#### `habits`
-| Column | Type | Description |
-|--------|------|-------------|
-| id | TEXT | Primary key |
-| name | TEXT | Habit name |
-| color | INTEGER | ARGB color value |
-| type | INTEGER | 0=untimed, 1=timed |
-| targetSeconds | INTEGER | Target duration (for timed habits) |
-| category | INTEGER | 0=good habit, 1=bad habit |
+### Fitur Utama
 
-#### `completions`
-| Column | Type | Description |
-|--------|------|-------------|
-| habit_id | TEXT | Foreign key to habits |
-| date | TEXT | ISO8601 date string |
-| count | INTEGER | Times completed on this date |
+| Fitur | Deskripsi |
+|-------|-----------|
+| ✅ **Pelacakan Kebiasaan** | Buat kebiasaan baik dan buruk tanpa batas |
+| ⏱️ **Timer Kebiasaan** | Dukungan untuk kebiasaan berbasis waktu dengan timer countdown |
+| 🎨 **Identitas Warna** | Warna otomatis berdasarkan kategori (biru untuk baik, merah untuk buruk) |
+| 📅 **Heatmap Kalender** | Visualisasi penyelesaian kebiasaan dalam format kalender |
+| 📊 **Dashboard Analitik** | Statistik dan insight komprehensif |
+| 📜 **Riwayat Lengkap** | Kronologi lengkap semua penyelesaian kebiasaan |
+| 🌓 **Mode Gelap/Terang** | Tema yang indah untuk mode gelap dan terang |
+| 🔐 **Sistem Login** | Autentikasi pengguna dengan penyimpanan lokal |
 
-For detailed database documentation, see [DATASET_DOCUMENTATION.md](DATASET_DOCUMENTATION.md)
+### Fitur Analitik
 
-## 🚀 Getting Started
+1. **📈 Progress Bulanan (Candlestick Chart)**
+   - Statistik penyelesaian harian
+   - Metrik maksimum, minimum, dan rata-rata
+   - Representasi visual dalam bentuk bar chart
 
-### Prerequisites
+2. **📊 Persentase Konsistensi**
+   - Skor konsistensi keseluruhan
+   - Perbandingan hari selesai vs total hari
+   - Visualisasi progress
+
+3. **🔥 Penghitung Streak**
+   - Pelacakan hari berturut-turut
+   - Top 5 streak terpanjang
+   - Pembaruan streak real-time
+
+4. **📋 Tingkat Penyelesaian Kebiasaan**
+   - Performa per kebiasaan
+   - Progress bar berbasis persentase
+   - Perbandingan penyelesaian vs target
+
+### Fitur Heatmap Interaktif
+
+- **🗓️ Kalender Interaktif**: Ketuk tanggal mana saja untuk melihat detail
+- **✅❌ Good vs Bad Habits**: Pemisahan visual dengan ikon
+- **🎨 Kode Warna**: Pewarnaan berbasis intensitas (skala 0-5+)
+- **⬅️➡️ Navigasi Bulanan**: Perpindahan bulan dengan mudah
+
+### Fitur Riwayat
+
+- **📆 Tampilan Kronologis**: Entri terbaru ditampilkan pertama
+- **📂 Display Terkategori**: Kebiasaan baik dan buruk dipisahkan
+- **📊 Ringkasan Harian**: Total penyelesaian per hari
+- **📝 Informasi Detail**: Kebiasaan mana yang diselesaikan dan berapa kali
+
+---
+
+## 🗄️ Struktur Database
+
+Aplikasi menggunakan **SQLite** untuk penyimpanan data lokal dengan struktur berikut:
+
+### Tabel `habits`
+
+| Kolom | Tipe | Deskripsi |
+|-------|------|-----------|
+| `id` | TEXT | Primary key |
+| `name` | TEXT | Nama kebiasaan |
+| `color` | INTEGER | Nilai warna ARGB |
+| `type` | INTEGER | 0=tanpa timer, 1=dengan timer |
+| `targetSeconds` | INTEGER | Durasi target (untuk kebiasaan dengan timer) |
+| `category` | INTEGER | 0=kebiasaan baik, 1=kebiasaan buruk |
+
+### Tabel `completions`
+
+| Kolom | Tipe | Deskripsi |
+|-------|------|-----------|
+| `habit_id` | TEXT | Foreign key ke habits |
+| `date` | TEXT | String tanggal ISO8601 |
+| `count` | INTEGER | Berapa kali diselesaikan pada tanggal ini |
+
+### Tabel `users`
+
+| Kolom | Tipe | Deskripsi |
+|-------|------|-----------|
+| `id` | TEXT | Primary key |
+| `username` | TEXT | Nama pengguna |
+| `password_hash` | TEXT | Hash password terenkripsi |
+
+---
+
+## 💻 Instalasi
+
+### Prasyarat
+
 - Flutter SDK (>=3.3.0 <4.0.0)
 - Dart SDK
 - Android Studio / VS Code
-- Android/iOS emulator or physical device
+- Emulator Android/iOS atau perangkat fisik
 
-### Installation
+### Langkah Instalasi
 
-1. Clone the repository
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/username/HabitTrackerApp.git
+   cd HabitTrackerApp
+   ```
+
+2. **Install dependensi**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Generate lokalisasi**
+   ```bash
+   flutter gen-l10n
+   ```
+
+4. **Jalankan aplikasi**
+   ```bash
+   flutter run
+   ```
+
+### Build untuk Release
+
 ```bash
-git clone <repository-url>
-cd HabitTrackerApp-main
-```
-
-2. Install dependencies
-```bash
-flutter pub get
-```
-
-3. Run the app
-```bash
-flutter run
-```
-
-## 🎨 Screenshots
-
-### Home Screen
-- Heatmap calendar showing monthly activity
-- List of all habits with completion status
-- Quick access to timer controls
-
-### Analytics
-- Monthly progress chart
-- Consistency metrics
-- Streak information
-- Per-habit statistics
-
-### History
-- Day-by-day completion log
-- Categorized by good/bad habits
-- Searchable and filterable
-
-## 📖 Usage Guide
-
-### Creating a Habit
-1. Tap the **+ Tambah** button
-2. Enter habit name
-3. Choose a color for identification
-4. Select category (Good Habit or Bad Habit)
-5. Toggle timer if needed and set duration
-6. Tap **SIMPAN**
-
-### Completing a Habit
-- **Untimed**: Tap the circle or checkmark icon
-- **Timed**: Start the timer, let it run to completion
-
-### Viewing Analytics
-1. Tap the **bar chart** icon in the app bar
-2. Navigate between months to see historical data
-3. View different metrics (progress, consistency, streak, completion rate)
-
-### Checking History
-1. Tap the **history** icon in the app bar
-2. Scroll through chronological entries
-3. See which habits were completed each day
-
-### Interactive Heatmap
-1. Tap any date on the heatmap calendar
-2. View popup showing all habits completed on that date
-3. See categorization (good vs bad habits)
-
-## 🛠️ Technical Details
-
-### Architecture
-- **State Management**: Provider
-- **Database**: SQLite (sqflite)
-- **UI Framework**: Material Design 3
-- **Platform Support**: Android, iOS, Windows, macOS, Linux, Web*
-
-*Note: Web uses in-memory fallback storage
-
-### Key Packages
-- `provider`: State management
-- `sqflite`: Local database
-- `path`: Path manipulation
-
-### Project Structure
-```
-lib/
-├── data/
-│   └── habits_db.dart          # Database operations
-├── models/
-│   └── habit.dart              # Habit model & enums
-├── pages/
-│   ├── home_page.dart          # Main screen
-│   ├── add_habit_page.dart     # Create habit
-│   ├── analytics_page.dart     # Analytics dashboard
-│   └── history_page.dart       # History view
-├── state/
-│   ├── habits_state.dart       # Habit state management
-│   └── app_settings.dart       # App settings
-├── widgets/
-│   ├── habit_card.dart         # Habit item widget
-│   ├── heatmap_calendar.dart   # Calendar heatmap
-│   └── wheel_timer_picker.dart # Time picker
-├── theme.dart                  # App theming
-└── main.dart                   # Entry point
-```
-
-## 📊 Data Privacy
-
-- ✅ All data stored locally on device
-- ✅ No cloud synchronization
-- ✅ No analytics or tracking
-- ✅ Complete data ownership
-- ✅ Works offline
-
-## 🎯 Future Enhancements
-
-- [ ] Cloud backup (Firebase/Supabase)
-- [ ] Habit reminders/notifications
-- [ ] Export data (JSON/CSV)
-- [ ] Achievement badges
-- [ ] Habit notes/reflections
-- [ ] Weekly/monthly reports
-- [ ] Goal setting
-- [ ] Social features
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues.
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 👨‍💻 Development
-
-### Running Tests
-```bash
-flutter test
-```
-
-### Building for Release
-```bash
-# Android
+# Android APK
 flutter build apk --release
+
+# Android App Bundle
+flutter build appbundle --release
 
 # iOS
 flutter build ios --release
 
 # Windows
 flutter build windows --release
+
+# Web
+flutter build web --release
 ```
-
-## 📞 Support
-
-For questions or issues, please open an issue on the repository.
 
 ---
 
-**Made with ❤️ using Flutter**
+## 📖 Panduan Penggunaan
+
+### 🔐 Login/Registrasi
+
+1. Buka aplikasi
+2. Masukkan username dan password
+3. Klik **MASUK** untuk login atau **DAFTAR** untuk membuat akun baru
+
+### ➕ Membuat Kebiasaan Baru
+
+1. Ketuk tombol **+ Tambah** di layar utama
+2. Masukkan nama kebiasaan
+3. Pilih kategori (**Kebiasaan Baik** atau **Kebiasaan Buruk**)
+4. Aktifkan timer jika diperlukan dan atur durasi
+5. Ketuk **SIMPAN**
+
+### ✅ Menyelesaikan Kebiasaan
+
+- **Tanpa Timer**: Ketuk ikon lingkaran atau centang
+- **Dengan Timer**: Mulai timer, biarkan berjalan sampai selesai
+
+### 📊 Melihat Analitik
+
+1. Ketuk ikon **grafik batang** di app bar
+2. Navigasi antar bulan untuk melihat data historis
+3. Lihat berbagai metrik (progress, konsistensi, streak, tingkat penyelesaian)
+
+### 📜 Memeriksa Riwayat
+
+1. Ketuk ikon **riwayat** di app bar
+2. Scroll melalui entri kronologis
+3. Lihat kebiasaan mana yang diselesaikan setiap hari
+
+### 🗓️ Menggunakan Heatmap Interaktif
+
+1. Ketuk tanggal mana saja pada kalender heatmap
+2. Lihat popup yang menampilkan semua kebiasaan yang diselesaikan pada tanggal tersebut
+3. Lihat kategorisasi (kebiasaan baik vs buruk)
+
+### ⚙️ Pengaturan Aplikasi
+
+- **🌓 Mode Tema**: Pilih antara tema terang, gelap, atau ikuti sistem
+- **🌐 Bahasa**: Pilih Bahasa Indonesia, Inggris, atau Arab
+- **🚪 Logout**: Keluar dari akun
+
+---
+
+## 🛠️ Teknologi
+
+### Arsitektur
+
+- **State Management**: Provider
+- **Database**: SQLite (sqflite)
+- **UI Framework**: Material Design 3
+- **Lokalisasi**: Flutter Intl (ARB files)
+- **Keamanan**: Crypto untuk hash password
+
+### Dukungan Platform
+
+| Platform | Status |
+|----------|--------|
+| Android | ✅ Didukung penuh |
+| iOS | ✅ Didukung penuh |
+| Windows | ✅ Didukung penuh |
+| macOS | ✅ Didukung penuh |
+| Linux | ✅ Didukung penuh |
+| Web | ⚠️ Dengan fallback in-memory storage |
+
+### Dependensi Utama
+
+| Package | Versi | Kegunaan |
+|---------|-------|----------|
+| `provider` | ^6.1.2 | State management |
+| `sqflite` | ^2.3.3 | Database lokal SQLite |
+| `shared_preferences` | ^2.2.2 | Penyimpanan preferensi |
+| `crypto` | ^3.0.3 | Enkripsi password |
+| `flutter_localizations` | SDK | Dukungan multi-bahasa |
+
+### Struktur Proyek
+
+```
+lib/
+├── data/
+│   └── habits_db.dart          # Operasi database
+├── l10n/
+│   ├── app_id.arb              # Bahasa Indonesia
+│   ├── app_en.arb              # Bahasa Inggris
+│   └── app_ar.arb              # Bahasa Arab
+├── models/
+│   └── habit.dart              # Model & enum kebiasaan
+├── pages/
+│   ├── home_page.dart          # Layar utama
+│   ├── add_habit_page.dart     # Tambah kebiasaan
+│   ├── analytics_page.dart     # Dashboard analitik
+│   ├── history_page.dart       # Tampilan riwayat
+│   └── login_page.dart         # Halaman login
+├── state/
+│   ├── habits_state.dart       # State kebiasaan
+│   ├── auth_state.dart         # State autentikasi
+│   └── app_settings.dart       # Pengaturan aplikasi
+├── widgets/
+│   ├── habit_card.dart         # Widget item kebiasaan
+│   ├── heatmap_calendar.dart   # Heatmap kalender
+│   └── wheel_timer_picker.dart # Picker waktu
+├── theme.dart                  # Tema aplikasi
+└── main.dart                   # Entry point
+```
+
+---
+
+## 🔒 Privasi Data
+
+- ✅ Semua data tersimpan lokal di perangkat
+- ✅ Tidak ada sinkronisasi cloud
+- ✅ Tidak ada analytics atau tracking eksternal
+- ✅ Kepemilikan data sepenuhnya oleh pengguna
+- ✅ Bekerja offline
+
+---
+
+## 🎯 Pengembangan Masa Depan
+
+- [ ] Backup cloud (Firebase/Supabase)
+- [ ] Reminder/notifikasi kebiasaan
+- [ ] Export data (JSON/CSV)
+- [ ] Badge pencapaian
+- [ ] Catatan/refleksi kebiasaan
+- [ ] Laporan mingguan/bulanan
+- [ ] Penetapan goal
+- [ ] Fitur sosial
+
+---
+
+## 🧪 Menjalankan Test
+
+```bash
+# Unit tests
+flutter test
+
+# Dengan coverage
+flutter test --coverage
+```
+
+---
+
+## 🤝 Kontribusi
+
+Kontribusi sangat diterima! Silakan:
+
+1. Fork repository ini
+2. Buat branch fitur (`git checkout -b fitur/FiturBaru`)
+3. Commit perubahan (`git commit -m 'Menambahkan fitur baru'`)
+4. Push ke branch (`git push origin fitur/FiturBaru`)
+5. Buka Pull Request
+
+---
+
+## 📄 Lisensi
+
+Proyek ini bersifat open source dan tersedia di bawah [Lisensi MIT](LICENSE).
+
+---
+
+## 📞 Dukungan
+
+Untuk pertanyaan atau masalah, silakan buka issue di repository ini.
+
+---
+
+<div align="center">
+
+**Dibuat dengan ❤️ menggunakan Flutter**
+
+⭐ Jangan lupa beri bintang jika proyek ini membantu Anda! ⭐
+
+</div>
